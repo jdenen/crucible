@@ -80,7 +80,7 @@ by adding `crucible` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:crucible, "~> 0.1.0"}
+    {:crucible, "~> 0.0.1"}
   ]
 end
 ```
