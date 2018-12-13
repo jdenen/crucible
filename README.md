@@ -1,5 +1,29 @@
 # Crucible
 
+Code as infrastructure
+
+## Idea
+
+"Infrastructure as code" is a misnomer.
+
+We should call it "infrastructure as configuration" or "infrastructure as data"
+because YAML (Ansible/CloudFormation) and glorified JSON (Terraform) are not code.
+
+Just as functional languages enable us to treat
+[code as data](https://blogs.mulesoft.com/dev/news-dev/code-is-data-data-is-code/),
+I believe they give us the capability to treat code as infrastructure. Crucible is
+going to explore this idea.
+
+## Core concepts
+
+1. Declarative and idempotent
+2. Granular control of create/delete/rollback behavior
+3. Rollbacks as a first class citizen
+4. Testing as a first class citizen
+5. Does not track state outside of execution
+
+## Thought dump
+
 ```elixir
 defmodule My.VPC do
   @moduledoc """
