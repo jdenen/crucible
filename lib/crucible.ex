@@ -1,18 +1,12 @@
 defmodule Crucible do
-  @moduledoc """
-  Documentation for Crucible.
-  """
+  use Application
 
-  @doc """
-  Hello world.
+  def start(_type, _args) do
+    children = [
+      Crucible.DSL.Store
+    ]
 
-  ## Examples
-
-      iex> Crucible.hello()
-      :world
-
-  """
-  def hello do
-    :world
+    opts = [strategy: :one_for_one, name: Crucible.Supervisor]
+    Supervisor.start_link(children, opts)
   end
 end
