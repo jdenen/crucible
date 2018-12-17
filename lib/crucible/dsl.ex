@@ -1,6 +1,7 @@
 defmodule Crucible.DSL do
   defmacro __using__(_opts) do
     quote do
+      @compile :nowarn_unused_vars
       import Crucible.DSL.Vpc
       import Crucible.DSL.Subnet
       @before_compile Crucible.DSL
@@ -19,29 +20,43 @@ defmodule Crucible.DSL do
     end
   end
 
-  def write_macro(type, id, body) do
+  def write_macro(caller, type, id, body, opts \\ []) do
     function_name = function_name(type, id)
 
     fields = get_fields(type, body)
     stripped_body = remove_field_assignments(fields, body)
 
-    quote do
+    case caller.function do
+      nil -> write_function(function_name, type, id, fields, stripped_body)
+      _ -> write_body(type, id, fields, body, opts)
+    end
+  end
+
+  defp write_body(type, id, fields, body, opts) do
+    fields = Keyword.put(fields, :id, id)
+
+    quote generated: true do
+      Process.put(unquote(type), unquote(id))
+      unquote(body)
+
+      values = Enum.into(unquote(fields), %{})
+
+      values =
+        Enum.reduce(unquote(opts), values, fn {k, v}, acc -> Map.put(acc, k, Process.get(v)) end)
+
+      struct(unquote(type), values)
+      |> Crucible.DSL.Store.put()
+
+      Process.delete(unquote(type))
+    end
+  end
+
+  defp write_function(function_name, type, id, fields, body) do
+    quote generated: true do
       Module.put_attribute(__MODULE__, :crucible_dsl_functions, unquote(function_name))
 
       def unquote(function_name)() do
-        Process.put(unquote(type), unquote(id))
-        unquote(stripped_body)
-
-        struct_values =
-          Enum.reduce(unquote(fields), %{}, fn {field, value}, acc ->
-            Map.put(acc, field, value)
-          end)
-
-        struct(unquote(type), Map.put(struct_values, :id, unquote(id)))
-        |> Crucible.DSL.Store.put()
-
-        Process.delete(unquote(type))
-        :ok
+        unquote(write_body(type, id, fields, body, []))
       end
     end
   end

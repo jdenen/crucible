@@ -34,6 +34,15 @@ defmodule Crucible.DSL.VpcTest do
     assert subnet.tags == ["subnet_tags"]
   end
 
+  test "standalone subnet" do
+    Crucible.DSL.VpcTest.Simple.process_infrastructure()
+
+    subnet = find(Crucible.Types.Subnet, :subnet_3)
+
+    assert subnet.cidr == "10.0.3.0/16"
+    assert subnet.tags == ["jenkins"]
+  end
+
   defp find(type, id) do
     Crucible.DSL.Store.get_all()
     |> Enum.find(fn struct -> Map.get(struct, :__struct__) == type && struct.id == id end)
@@ -56,6 +65,11 @@ defmodule Crucible.DSL.VpcTest.Simple do
     subnet :subnet_2 do
       tags = ["subnet_tags"]
     end
+  end
+
+  subnet :subnet_3 do
+    cidr = "10.0.3.0/16"
+    tags = ["jenkins"]
   end
 
   defp determine_tags() do
