@@ -22,7 +22,7 @@ defmodule Crucible.DSL.Subnet do
           Map.put(acc, field, value)
         end)
 
-      struct_values = Map.put(struct_values, :vpc, Process.get(:crucible_dsl_vpc))
+      struct_values = Map.put(struct_values, :vpc, Process.get(Crucible.Types.Vpc))
 
       struct(Crucible.Types.Subnet, Map.put(struct_values, :id, unquote(id)))
       |> Crucible.DSL.Store.put()

@@ -25,7 +25,7 @@ defmodule Crucible.DSL.Store do
     {:noreply, [term | state]}
   end
 
-  def handle_cast(:clear, state) do
+  def handle_cast(:clear, _state) do
     {:noreply, []}
   end
 
