@@ -1,7 +1,6 @@
 defmodule Crucible.Types.Subnet do
   use Crucible.Type
 
-  @name :subnet
   @relationships [vpc: Crucible.Types.Vpc]
 
   @enforce_keys [:id]
