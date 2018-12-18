@@ -8,9 +8,4 @@ defmodule Example do
       tags = ["Apples"]
     end
   end
-
-  balser :one do
-    name = "Tyler"
-    tags = ["Bailey"]
-  end
 end
