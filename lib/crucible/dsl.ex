@@ -2,8 +2,7 @@ defmodule Crucible.DSL do
   defmacro __using__(_opts) do
     quote do
       @compile :nowarn_unused_vars
-      import Crucible.DSL.Vpc
-      import Crucible.DSL.Subnet
+      import Crucible.DSL.Macros
       @before_compile Crucible.DSL
       Module.register_attribute(__MODULE__, :crucible_dsl_functions, accumulate: true)
     end
