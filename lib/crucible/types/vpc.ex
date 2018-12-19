@@ -3,5 +3,4 @@ defmodule Crucible.Types.Vpc do
 
   field :id, required: true
   field :tags, default: []
-
 end

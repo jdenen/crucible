@@ -5,5 +5,4 @@ defmodule Crucible.Types.Subnet do
   field :cidr
   field :vpc, relationship: Crucible.Types.Vpc
   field :tags, default: []
-
 end

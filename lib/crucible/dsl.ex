@@ -78,7 +78,7 @@ defmodule Crucible.DSL do
   defp get_fields(struct_module, body) do
     struct_fields = struct_fields(struct_module)
 
-    Macro.prewalk(body, &remove_macro_blocks/1)
+    Macro.prewalk(body, &remove_macro_blocks(&1, get_macros()))
     |> Macro.prewalk([], fn exp, acc ->
       with {:=, _, [{field, _, nil}, value]} <- exp,
            true <- field in struct_fields,
@@ -91,9 +91,18 @@ defmodule Crucible.DSL do
     |> elem(1)
   end
 
-  defp remove_macro_blocks({:__block__, _, _}), do: nil
-  defp remove_macro_blocks({:do, _}), do: nil
-  defp remove_macro_blocks(x), do: x
+  defp get_macros() do
+    Crucible.DSL.Macros.__info__(:macros) |> Enum.map(fn {name, arity} -> name end)
+  end
+
+  defp remove_macro_blocks({function, _, _} = ast, macros) do
+    case function in macros do
+      true -> nil
+      false -> ast
+    end
+  end
+
+  defp remove_macro_blocks(x, _), do: x
 
   defp struct_fields(module) do
     module.__struct__()
