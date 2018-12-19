@@ -3,6 +3,55 @@ defmodule Crucible.DependencyTreeTest do
   alias Graph.Edge
   alias Crucible.DependencyTree
 
+  describe "graph"  do
+    test "all elements are added to the tree" do
+      vs = [
+        %Parent{id: :p2, parent: :g},
+        %Grandparent{id: :g},
+        %Parent{id: :p1},
+        %Child{id: :c, parent_one: :p1}
+      ]
+
+      tree = DependencyTree.graph(vs)
+      assert Enum.all?(vs, &Graph.has_vertex?(tree, &1))
+    end
+
+    test "edges are established between parent and child" do
+      parent = %Parent{id: :p1}
+      child = %Child{id: :c, parent_one: :p1}
+
+      expected = [Edge.new(child, parent)]
+      actual = tree_edges([parent, child])
+
+      assert has_expected_edges(expected, actual)
+      assert has_no_unexpected_edges(expected, actual)
+    end
+
+    test "elements can have multiple dependents" do
+      parent = %Parent{id: :parent}
+      child1 = %Child{id: :c1, parent_one: :parent}
+      child2 = %Child{id: :c2, parent_one: :parent}
+
+      expected = [Edge.new(child1, parent), Edge.new(child2, parent)]
+      actual = tree_edges([child1, parent, child2])
+
+      assert has_expected_edges(expected, actual)
+      assert has_no_unexpected_edges(expected, actual)
+    end
+
+    test "elements can have multiple dependencies" do
+      parent1 = %Parent{id: :p1}
+      parent2 = %Parent{id: :p2}
+      child = %Child{id: :c, parent_one: :p1, parent_two: :p2}
+
+      expected = [Edge.new(child, parent1), Edge.new(child, parent2)]
+      actual = tree_edges([parent1, parent2, child])
+
+      assert has_expected_edges(expected, actual)
+      assert has_no_unexpected_edges(expected, actual)
+    end
+  end
+
   describe "chunk" do
     test "returns chunk with no dependencies first" do
       g =
@@ -45,5 +94,19 @@ defmodule Crucible.DependencyTreeTest do
 
       assert DependencyTree.chunk(g) == [[:b, :c], [:a]]
     end
+  end
+
+  defp tree_edges(list) do
+    list
+    |> DependencyTree.graph
+    |> Graph.edges
+  end
+
+  defp has_expected_edges(expected, actual) do
+    Enum.all?(expected, &Enum.member?(actual, &1))
+  end
+
+  defp has_no_unexpected_edges(expected, actual) do
+    not Enum.any?(actual, fn e -> not Enum.member?(expected, e) end)
   end
 end

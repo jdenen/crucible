@@ -1,8 +1,35 @@
 defmodule Crucible.DependencyTree do
+  alias Graph.Edge
+
+  def graph(resources) do
+    resources
+    |> to_edges
+    |> Enum.reduce(Graph.new(type: :directed), &Graph.add_edge(&2, &1))
+  end
+
   def chunk(graph) do
     graph
     |> chunk_dependencies
     |> Enum.reverse
+  end
+
+  defp to_edges(resources) do
+    Enum.flat_map(resources, fn struct ->
+      struct.__struct__.relationships
+      |> Enum.flat_map(&to_dependency(&1, struct, resources))
+      |> Enum.map(&Edge.new(struct, &1))
+    end)
+  end
+
+  defp to_dependency({field, type} = _rel, child, resources) do
+    key = Map.get(child, field)
+
+    resources
+    |> Enum.filter(&find_dependency(&1, type, key))
+  end
+
+  defp find_dependency(%{id: id} = struct, match_type, match_key) do
+    struct.__struct__ == match_type and id == match_key
   end
 
   defp chunk_dependencies(graph, acc \\ [])
