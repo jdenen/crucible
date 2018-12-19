@@ -7,7 +7,7 @@ defmodule Crucible.DependencyTree do
       |> Enum.filter(fn struct -> struct.__struct__.relationships == [] end)
 
     resources
-    |> to_edges
+    |> get_edges
     |> Enum.reduce(Graph.new(type: :directed), &Graph.add_edge(&2, &1))
     |> Graph.add_vertices(independents)
   end
@@ -18,7 +18,7 @@ defmodule Crucible.DependencyTree do
     |> Enum.reverse
   end
 
-  defp to_edges(resources) do
+  defp get_edges(resources) do
     Enum.flat_map(resources, fn struct ->
       struct.__struct__.relationships
       |> Enum.flat_map(&to_dependency(&1, struct, resources))
@@ -28,9 +28,7 @@ defmodule Crucible.DependencyTree do
 
   defp to_dependency({field, type} = _rel, child, resources) do
     key = Map.get(child, field)
-
-    resources
-    |> Enum.filter(&find_dependency(&1, type, key))
+    Enum.filter(resources, &find_dependency(&1, type, key))
   end
 
   defp find_dependency(%{id: id} = struct, match_type, match_key) do
