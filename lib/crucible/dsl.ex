@@ -40,8 +40,7 @@ defmodule Crucible.DSL do
 
       values = Enum.into(unquote(fields), %{})
 
-      values =
-        Enum.reduce(unquote(opts), values, fn {k, v}, acc -> Map.put(acc, k, Process.get(v)) end)
+      values = Enum.reduce(unquote(opts), values, fn {k, v}, acc -> Map.put(acc, k, Process.get(v)) end)
 
       struct(unquote(type), values)
       |> Crucible.DSL.Store.put()

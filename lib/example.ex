@@ -8,4 +8,9 @@ defmodule Example do
       tags = ["Apples"]
     end
   end
+
+  subnet :subnet_2 do
+    vpc = :vpc_1
+    tags = ["Jenkins"]
+  end
 end
