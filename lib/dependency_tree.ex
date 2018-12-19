@@ -2,9 +2,14 @@ defmodule Crucible.DependencyTree do
   alias Graph.Edge
 
   def graph(resources) do
+    independents =
+      resources
+      |> Enum.filter(fn struct -> struct.__struct__.relationships == [] end)
+
     resources
     |> to_edges
     |> Enum.reduce(Graph.new(type: :directed), &Graph.add_edge(&2, &1))
+    |> Graph.add_vertices(independents)
   end
 
   def chunk(graph) do

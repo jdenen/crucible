@@ -50,6 +50,33 @@ defmodule Crucible.DependencyTreeTest do
       assert has_expected_edges(expected, actual)
       assert has_no_unexpected_edges(expected, actual)
     end
+
+    test "elements with no relationships exist in the tree" do
+      independent = %Grandparent{id: :indy}
+      parent = %Parent{id: :parent}
+      child = %Child{id: :child, parent_one: :parent}
+
+      expected_edges = [Edge.new(child, parent)]
+      dep_tree = DependencyTree.graph([parent, independent, child])
+      actual_edges = Graph.edges(dep_tree)
+
+      assert has_expected_edges(expected_edges, actual_edges)
+      assert has_no_unexpected_edges(expected_edges, actual_edges)
+      assert Graph.has_vertex?(dep_tree, independent)
+    end
+
+    test "can construct tree entirely without relationships" do
+      i1 = %Grandparent{id: :i1}
+      i2 = %Grandparent{id: :i2}
+
+      expected_edges = []
+      dep_tree = DependencyTree.graph([i1, i2])
+      actual_edges = Graph.edges(dep_tree)
+
+      assert has_expected_edges(expected_edges, actual_edges)
+      assert has_no_unexpected_edges(expected_edges, actual_edges)
+      assert Graph.vertices(dep_tree) == [i2, i1]
+    end
   end
 
   describe "chunk" do
@@ -93,6 +120,11 @@ defmodule Crucible.DependencyTreeTest do
         |> Graph.add_vertex(:c)
 
       assert DependencyTree.chunk(g) == [[:b, :c], [:a]]
+    end
+
+    test "tree entirely without relationships returns one chunk" do
+      g = Graph.new |> Graph.add_vertices([:a, :b, :c])
+      assert DependencyTree.chunk(g) == [[:a, :b, :c]]
     end
   end
 
