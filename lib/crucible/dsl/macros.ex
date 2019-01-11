@@ -1,13 +1,17 @@
 defmodule Crucible.DSL.Macros do
   Application.get_env(:crucible, :types)
   |> Enum.map(fn type ->
-    Code.ensure_compiled(type)
+    case Code.ensure_compiled(type) do
+      {:error, reason} ->
+        IO.puts("Unable to compile Macros, #{type} -> #{inspect(reason)}")
 
-    name = type.name()
-    relationships = type.relationships()
+      _ ->
+        name = type.name()
+        relationships = type.relationships()
 
-    defmacro unquote(name)(id, do: body) do
-      Crucible.DSL.write_macro(__CALLER__, unquote(type), id, body, unquote(relationships))
+        defmacro unquote(name)(id, do: body) do
+          Crucible.DSL.write_macro(__CALLER__, unquote(type), id, body, unquote(relationships))
+        end
     end
   end)
 end

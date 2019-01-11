@@ -3,7 +3,7 @@ defmodule Crucible.DependencyTreeTest do
   alias Graph.Edge
   alias Crucible.DependencyTree
 
-  describe "graph"  do
+  describe "graph" do
     test "all elements are added to the tree" do
       vs = [
         %Parent{id: :p2, parent: :g},
@@ -82,7 +82,7 @@ defmodule Crucible.DependencyTreeTest do
   describe "chunk" do
     test "returns chunk with no dependencies first" do
       g =
-        Graph.new
+        Graph.new()
         |> Graph.add_edges([Edge.new(:a, :b), Edge.new(:b, :c), Edge.new(:b, :d)])
 
       [no_deps | _] = DependencyTree.chunk(g)
@@ -91,7 +91,7 @@ defmodule Crucible.DependencyTreeTest do
 
     test "subsequent chunks have had their dependencies previously chunked" do
       g =
-        Graph.new
+        Graph.new()
         |> Graph.add_edges([Edge.new(:a, :b), Edge.new(:b, :c), Edge.new(:b, :d)])
 
       [_ | subsequent] = DependencyTree.chunk(g)
@@ -100,7 +100,7 @@ defmodule Crucible.DependencyTreeTest do
 
     test "vertices are chunked together regardless of their depth in the tree" do
       g =
-        Graph.new
+        Graph.new()
         |> Graph.add_edge(:a, :b)
         |> Graph.add_edge(:a, :c)
         |> Graph.add_edge(:a, :d)
@@ -115,7 +115,7 @@ defmodule Crucible.DependencyTreeTest do
 
     test "vertex without dependents returns in first chunk" do
       g =
-        Graph.new
+        Graph.new()
         |> Graph.add_edge(:a, :b)
         |> Graph.add_vertex(:c)
 
@@ -123,15 +123,15 @@ defmodule Crucible.DependencyTreeTest do
     end
 
     test "tree entirely without relationships returns one chunk" do
-      g = Graph.new |> Graph.add_vertices([:a, :b, :c])
+      g = Graph.new() |> Graph.add_vertices([:a, :b, :c])
       assert DependencyTree.chunk(g) == [[:a, :b, :c]]
     end
   end
 
   defp tree_edges(list) do
     list
-    |> DependencyTree.graph
-    |> Graph.edges
+    |> DependencyTree.graph()
+    |> Graph.edges()
   end
 
   defp has_expected_edges(expected, actual) do
