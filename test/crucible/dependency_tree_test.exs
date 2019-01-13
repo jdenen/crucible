@@ -75,7 +75,7 @@ defmodule Crucible.DependencyTreeTest do
 
       assert has_expected_edges(expected_edges, actual_edges)
       assert has_no_unexpected_edges(expected_edges, actual_edges)
-      assert Graph.vertices(dep_tree) == [i2, i1]
+      assert MapSet.new(Graph.vertices(dep_tree)) == MapSet.new([i2, i1])
     end
   end
 
