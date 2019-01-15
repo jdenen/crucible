@@ -2,10 +2,6 @@ defmodule Crucible.DSLTest do
   use ExUnit.Case
   import Helper
 
-  setup do
-    on_exit(fn -> Crucible.DSL.Store.clear() end)
-  end
-
   test "dsl can support simple struct" do
     with_module do
       defmodule Stuff do
