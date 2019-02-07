@@ -12,8 +12,7 @@ defmodule Crucible.DSL do
 
     quote do
       def process_infrastructure() do
-        Enum.each(unquote(functions), fn func -> apply(__MODULE__, func, []) end)
-        Crucible.DSL.Store.get_all()
+        Enum.flat_map(unquote(functions), fn func -> apply(__MODULE__, func, []) end)
       end
     end
   end
@@ -32,9 +31,11 @@ defmodule Crucible.DSL do
       Module.put_attribute(__MODULE__, :crucible_dsl_functions, unquote(function_name))
 
       def unquote(function_name)() do
+        structs = []
         Process.put(unquote(type), unquote(id))
         unquote(write_body(type, id, body, relationships))
         Process.delete(unquote(type))
+        structs
       end
     end
   end
@@ -53,8 +54,8 @@ defmodule Crucible.DSL do
 
       values = Enum.reduce(unquote(relationships), unquote(fields), fn {k, v}, acc -> Keyword.put(acc, k, Process.get(v)) end)
 
-      struct(unquote(type), values)
-      |> Crucible.DSL.Store.put()
+      struct = struct(unquote(type), values)
+      structs = [struct | structs]
     end
   end
 
