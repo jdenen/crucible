@@ -15,7 +15,7 @@ defmodule Crucible.DependencyTree do
   def chunk(graph) do
     graph
     |> chunk_dependencies
-    |> Enum.reverse
+    |> Enum.reverse()
   end
 
   defp get_edges(resources) do
@@ -37,10 +37,11 @@ defmodule Crucible.DependencyTree do
 
   defp chunk_dependencies(graph, acc \\ [])
   defp chunk_dependencies(%{vertices: vs}, acc) when map_size(vs) == 0, do: acc
+
   defp chunk_dependencies(graph, acc) do
     chunk =
       graph
-      |> Graph.vertices
+      |> Graph.vertices()
       |> Enum.filter(fn v -> Graph.out_neighbors(graph, v) == [] end)
 
     chunk

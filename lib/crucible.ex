@@ -3,7 +3,6 @@ defmodule Crucible do
 
   def start(_type, _args) do
     children = [
-      Crucible.DSL.Store
     ]
 
     opts = [strategy: :one_for_one, name: Crucible.Supervisor]
