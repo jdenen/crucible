@@ -24,11 +24,13 @@ defmodule Crucible.Type do
     struct_fields = Enum.map(fields, fn {name, opts} -> {name, Keyword.get(opts, :default, nil)} end)
 
     enforced_fields =
-      Enum.filter(fields, fn {_name, opts} -> Keyword.get(opts, :required, false) == true end)
+      fields
+      |> Enum.filter(fn {_name, opts} -> Keyword.get(opts, :required, false) == true end)
       |> Enum.map(&elem(&1, 0))
 
     relationships =
-      Enum.map(fields, fn {name, opts} -> {name, Keyword.get(opts, :relationship, nil)} end)
+      fields
+      |> Enum.map(fn {name, opts} -> {name, Keyword.get(opts, :relationship, nil)} end)
       |> Enum.filter(fn {_name, relationship} -> relationship != nil end)
 
     quote do

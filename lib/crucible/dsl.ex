@@ -52,10 +52,12 @@ defmodule Crucible.DSL do
       unquote_splicing(Enum.reverse(blocks))
       unquote(assignments)
 
-      values = Enum.reduce(unquote(relationships), unquote(fields), fn {k, v}, acc -> Keyword.put(acc, k, Process.get(v)) end)
+      values =
+        unquote(relationships)
+        |> Enum.reduce(unquote(fields), fn {k, v}, acc -> Keyword.put(acc, k, Process.get(v)) end)
 
       struct = struct(unquote(type), values)
-      structs = [ struct | structs ]
+      structs = [struct | structs]
     end
   end
 
