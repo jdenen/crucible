@@ -1,4 +1,7 @@
 defmodule Crucible.DSL do
+  @moduledoc """
+  Module used to turn `Crucible.Type` infrastructure code into actual cloud infrastructure.
+  """
   defmacro __using__(_opts) do
     quote do
       import Crucible.DSL.Macros
@@ -44,7 +47,8 @@ defmodule Crucible.DSL do
     {assignments, blocks} = separate_assignments_and_blocks(body)
 
     fields =
-      get_fields(type, body)
+      type
+      |> get_fields(body)
       |> Enum.map(fn field -> {field, Macro.var(field, nil)} end)
       |> Keyword.put(:id, id)
 
@@ -85,7 +89,8 @@ defmodule Crucible.DSL do
     struct_fields = struct_fields(struct_module)
 
     {_, fields} =
-      Macro.prewalk(body, &remove_macro_blocks(&1, get_macros()))
+      body
+      |> Macro.prewalk(&remove_macro_blocks(&1, get_macros()))
       |> Macro.prewalk([], fn exp, acc ->
         with {:=, _, [{field, _, nil}, _value]} <- exp,
              true <- field in struct_fields do

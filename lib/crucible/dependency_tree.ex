@@ -1,4 +1,6 @@
 defmodule Crucible.DependencyTree do
+  @moduledoc false
+
   alias Graph.Edge
 
   def graph(resources) do

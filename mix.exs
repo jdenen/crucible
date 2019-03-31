@@ -29,7 +29,8 @@ defmodule Crucible.MixProject do
   defp deps do
     [
       {:libgraph, "~> 0.7"},
-      {:ex_doc, "~> 0.19", only: :dev, runtime: false}
+      {:ex_doc, "~> 0.19", only: :dev, runtime: false},
+      {:credo, "~> 0.10", only: [:dev, :test], runtime: false}
     ]
   end
 

@@ -1,4 +1,6 @@
 defmodule Crucible.DSL.Macros do
+  @moduledoc false
+
   Application.get_env(:crucible, :types)
   |> Enum.map(fn type ->
     case Code.ensure_compiled(type) do

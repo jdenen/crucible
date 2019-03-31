@@ -1,4 +1,8 @@
 defmodule Crucible.Type do
+  @moduledoc """
+  Module used to define a Crucible infrastructure types.
+  """
+
   @callback name() :: atom
   @callback relationships :: keyword
 
